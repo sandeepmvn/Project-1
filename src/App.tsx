@@ -90,6 +90,9 @@ function getBestComputerMove(board: Cell[]) {
 }
 
 function App() {
+  const [playerName, setPlayerName] = useState('')
+  const [nameInput, setNameInput] = useState('')
+  const [gameStarted, setGameStarted] = useState(false)
   const [board, setBoard] = useState<Cell[]>(Array(9).fill(null))
   const [isXTurn, setIsXTurn] = useState(true)
 
@@ -97,13 +100,16 @@ function App() {
   const isDraw = useMemo(() => !winner && board.every(Boolean), [board, winner])
   const isComputerTurn = !isXTurn && !winner && !isDraw
 
-  const statusText = winner
-    ? `Winner: ${winner}`
-    : isDraw
-      ? 'It is a draw!'
-      : isComputerTurn
-        ? 'Computer is thinking...'
-        : 'Your turn: X'
+  const displayName = playerName || 'Player 1'
+  const statusText = winner === 'X'
+    ? `🎉 ${displayName} wins!`
+    : winner === 'O'
+      ? '🤖 Computer wins!'
+      : isDraw
+        ? "It's a draw!"
+        : isComputerTurn
+          ? 'Computer is thinking...'
+          : `Your turn, ${displayName}!`
 
   useEffect(() => {
     if (!isComputerTurn) {
@@ -145,6 +151,49 @@ function App() {
   const handleReset = () => {
     setBoard(Array(9).fill(null))
     setIsXTurn(true)
+  }
+
+  const handleStartGame = (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmed = nameInput.trim()
+    if (!trimmed) return
+    setPlayerName(trimmed)
+    setGameStarted(true)
+  }
+
+  if (!gameStarted) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10">
+        <section className="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl backdrop-blur">
+          <h1 className="text-center text-3xl font-bold text-white">Tic-Tac-Toe</h1>
+          <p className="mt-2 text-center text-sm text-slate-300">
+            Modern React + Tailwind game board
+          </p>
+          <form onSubmit={handleStartGame} className="mt-8 flex flex-col gap-4">
+            <label className="text-center text-lg font-semibold text-white" htmlFor="player-name">
+              What's your name, Player 1?
+            </label>
+            <input
+              id="player-name"
+              type="text"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="Enter your name"
+              maxLength={20}
+              className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-center text-white placeholder-slate-500 outline-none focus:border-cyan-500"
+              autoFocus
+            />
+            <button
+              type="submit"
+              disabled={!nameInput.trim()}
+              className="rounded-xl bg-cyan-500 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Start Game
+            </button>
+          </form>
+        </section>
+      </main>
+    )
   }
 
   return (
