@@ -26,6 +26,8 @@ npm run build
 
 This project uses Vite 7, which recommends Node.js `20.19+` or `22.12+`.
 
+The app requires `index.html` to contain `<div id="root"></div>` as the React mount point. If this element is missing, the app will throw a descriptive error rather than a cryptic null reference exception.
+
 ## CI/CD (GitHub Actions)
 
 This repository now includes two GitHub Actions workflows:
